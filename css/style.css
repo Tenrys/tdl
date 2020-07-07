@@ -1,0 +1,7 @@
+.has-aligned-rows td, .has-aligned-rows th {
+	vertical-align: middle !important;
+}
+
+.modal-card .modal-card-foot {
+	justify-content: flex-end;
+}

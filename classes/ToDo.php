@@ -6,10 +6,10 @@ class ToDo extends ToDoItem {
 
 	protected string $description;
 	protected string $status;
-	protected User $assigned;
-	protected DateTime $createdAt;
-	protected DateTime $startedAt;
-	protected DateTime $completedAt;
+	protected ?User $assigned;
+	protected ?DateTime $createdAt;
+	protected ?DateTime $startedAt;
+	protected ?DateTime $completedAt;
 
 	protected static Array $sqlMap = [ // When Dummy->forSQL is called, property "from" will be renamed to "to"
 		"assigned" => "id_assigned",
@@ -23,10 +23,10 @@ class ToDo extends ToDoItem {
 
 		$this->setDescription($data["description"] ?? "");
 		$this->setStatus($data["status"] ?? "");
-		$this->setAssigned($data["id_assigned"] ?? "");
-		$this->setCreatedAt($data["created_at"] ?? "");
-		$this->setStartedAt($data["started_at"] ?? "");
-		$this->setCompletedAt($data["completed_at"] ?? "");
+		$this->setAssigned($data["id_assigned"] ?? null);
+		$this->setCreatedAt($data["created_at"] ?? null);
+		$this->setStartedAt($data["started_at"] ?? null);
+		$this->setCompletedAt($data["completed_at"] ?? null);
 	}
 
 	// Getters

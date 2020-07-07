@@ -1,24 +1,28 @@
-<template id="todo-template">
-	<tr class="todo" :class="{ 'is-striked': completed, 'has-text-danger': canceled }">
+<template>
+	<tr
+		class="todo has-aligned-rows"
+		:class="{ 'is-completed': completed, 'has-text-danger': canceled }"
+	>
 		<slot></slot>
 		<th>{{ id }}</th>
 		<td class="description">{{ description }}</td>
-		<td v-if="assigned">
-			{{ assigned.username }}
-		</td>
-		<td v-else>
-			<pre>n/a</pre>
+		<td>
+			<template v-if="assigned">
+				{{ assigned.username }}
+			</template>
 		</td>
 		<td>{{ niceStatus }}</td>
-		<td>{{ new Date(createdAt.date).toLocaleString("fr-FR") }}</td>
-		<td></td>
+		<td>{{ formatDate(createdAt) }}</td>
+		<td>{{ formatDate(startedAt) }}</td>
+		<td>{{ formatDate(completedAt) }}</td>
+		<td v-if="$root.isAdmin">
+			<div class="buttons">
+				<button class="button is-warning" @click="$emit('edit')">Modifier</button>
+			</div>
+		</td>
 	</tr>
 </template>
-<style>
-.todo.is-striked .description {
-	text-decoration: line-through;
-}
-</style>
+
 <script>
 const statusMap = {
 	WAITING: "En attente",
@@ -27,8 +31,8 @@ const statusMap = {
 	CANCELED: "Annulée",
 };
 
-Vue.component("todo", {
-	props: ["id", "description", "status", "assigned", "startedAt", "createdAt", "completedAt"],
+export default {
+	props: ["id", "description", "status", "assigned", "createdAt", "startedAt", "completedAt"],
 	computed: {
 		completed() {
 			return this.status == "COMPLETED" || this.status == "CANCELED";
@@ -40,9 +44,20 @@ Vue.component("todo", {
 			return statusMap[this.status];
 		},
 	},
-	mounted() {
-		console.log(this.createdAt);
+	methods: {
+		formatDate(date) {
+			if (date && date.date) {
+				return new Date(date.date).toLocaleString("fr-FR");
+			} else {
+				return "";
+			}
+		},
 	},
-	template: "#todo-template",
-});
+};
 </script>
+
+<style>
+.todo.is-completed {
+	opacity: 0.75;
+}
+</style>

@@ -11,8 +11,6 @@ require_once("includes/init.php");
 		<?php require("includes/head.php") ?>
 		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 		<title>Liste de tâches</title>
-
-		<?php require("js/components/ToDo.vue") ?>
 	</head>
 
 	<body>
@@ -29,6 +27,9 @@ require_once("includes/init.php");
 			<section class="section" id="app">
 				<div class="columns is-centered">
 					<div class="column is-narrow">
+						<div v-if="isAdmin" class="buttons is-right">
+							<button class="button is-link" @click="showModal({})">Nouveau</button>
+						</div>
 						<table class="table is-hoverable">
 							<thead>
 								<th></th>
@@ -39,24 +40,25 @@ require_once("includes/init.php");
 								<th>Créée le</th>
 								<th>Démarrée le</th>
 								<th>Terminée le</th>
-								<th>Actions</th>
+								<th v-if="isAdmin">Actions</th>
 							</thead>
 							<tbody>
-								<tr is="todo" v-for="todo in todos" :key="todo.id" v-bind="todo">
-									<template>
+								<tr is="ToDo" v-for="todo in todos" :key="todo.id" v-bind="todo" @edit="showModal(todo)">
+									<td>
 										<input type="checkbox" v-model="todo.selected">
-									</template>
+									</td>
 								</tr>
 							</tbody>
 						</table>
 					</div>
 				</div>
+				<div is="ToDoModal" :todo="dirtyTodo" :class="{ 'is-active': dirtyTodo }"></div>
 			</section>
 		</main>
 
 		<?php require("includes/footer.php") ?>
 
-		<script src="js/index.js"></script>
+		<script src="bundle.js"></script>
 	</body>
 
 </html>

@@ -1,6 +1,7 @@
 <?php
 
 function _set_item_date(Item $item, string $method, $date) {
+	if (!isset($date)) return;
 	if (is_string($date)) {
 		$date = new DateTime($date);
 	}
