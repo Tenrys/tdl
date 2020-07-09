@@ -77,4 +77,10 @@ class User extends ToDoItem {
 		$this->password = $password;
 	}
 	public function setRank(string $rank) { $this->rank = $rank; }
+
+	public function jsonSerialize() {
+		$json = $this->toArray();
+		unset($json["password"]);
+		return $json;
+	}
 }

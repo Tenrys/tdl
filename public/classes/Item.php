@@ -37,7 +37,7 @@ abstract class Item implements JsonSerializable {
 		}
 
 		foreach (static::$sqlMap as $from => $to) {
-			$arr[$to] = $arr[$from];
+			$arr[$to] = $arr[$from] ?? null;
 			unset($arr[$from]);
 		}
 

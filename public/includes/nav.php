@@ -1,6 +1,11 @@
 <nav class="navbar is-dark">
-	<div class="navbar-menu">
-		<div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+	<div class="navbar-brand">
+		<div class="navbar-item">
+			<p class="has-text-warning"><b>Liste de tâches</b></p>
+		</div>
+	</div>
+	<div class="navbar-menu is-active">
+		<div class="navbar-start">
 			<a class="navbar-item" href="index.php">
 				Accueil
 			</a>

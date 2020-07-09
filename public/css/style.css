@@ -1,0 +1,11 @@
+.has-aligned-rows td, .has-aligned-rows th {
+	vertical-align: middle !important;
+}
+
+.buttons .dropdown:not(:last-child):not(.is-fullwidth) {
+    margin-right: .5rem;
+}
+
+thead th {
+	cursor: pointer;
+}
