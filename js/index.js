@@ -1,6 +1,7 @@
 import ToDo from "./components/ToDo.vue";
 import ToDoModal from "./components/ToDoModal.vue";
 import UserList from "./components/UserList.vue";
+import { get, sortBy, find } from "lodash";
 
 new Vue({
 	components: { ToDo, ToDoModal, UserList },
@@ -23,6 +24,15 @@ new Vue({
 				{ id: "COMPLETED", class: "has-text-success-dark", display: "Terminée" },
 				{ id: "WAITING", class: "has-text-warning-dark", display: "Annulée" },
 			],
+			rows: [
+				{ name: "id", display: "ID" },
+				{ name: "description", display: "Tâche" },
+				{ name: "assigned.username", display: "Assignée à" },
+				{ name: "status", display: "Statut" },
+				{ name: "createdAt.date", display: "Créée le" },
+				{ name: "startedAt.date", display: "Démarrée le" },
+				{ name: "completedAt.date", display: "Terminée le" },
+			],
 		};
 	},
 	computed: {
@@ -33,28 +43,23 @@ new Vue({
 			if (!this.sortMethod) {
 				return this.todos;
 			}
-			const todos = this.todos.slice().sort((a, b) => {
-				if (a[this.sortMethod] < b[this.sortMethod]) {
-					return -1;
-				} else {
-					return 1;
-				}
-				return 0;
-			});
+			const todos = sortBy(this.todos, this.sortMethod);
 			if (this.sortReverse) {
 				todos.reverse();
 			}
 			return todos;
 		},
-		allSelected: {
+		selected() {
+			return this.todos.filter(todo => todo.selected);
+		},
+		all: {
 			get() {
-				return this.todos.filter(todo => todo.selected).length == this.todos.length;
+				return this.selected.length > this.todos.length / 2;
 			},
 			set() {
-				const state =
-					this.todos.filter(todo => todo.selected).length <= this.todos.length / 2;
+				const all = !this.all;
 				for (const todo of this.todos) {
-					this.$set(todo, "selected", state);
+					this.$set(todo, "selected", all);
 				}
 			},
 		},
@@ -74,9 +79,6 @@ new Vue({
 			}
 			this.dropdowns[name].active = !this.dropdowns[name].active;
 		},
-		toggleTodo(todo) {
-			this.$set(todo, "selected", !todo.selected);
-		},
 		sort(method) {
 			if (this.sortMethod != method) {
 				this.sortMethod = method;
@@ -86,24 +88,43 @@ new Vue({
 			}
 		},
 		assignTo(user) {
-			for (const todo of this.todos.filter(todo => todo.selected)) {
+			for (const todo of this.selected) {
 				todo.assigned = user;
 			}
 			this.postTodos();
 		},
 		changeStatus(status) {
-			for (const todo of this.todos.filter(todo => todo.selected)) {
+			for (const todo of this.selected) {
 				todo.status = status;
 			}
 			this.postTodos();
 		},
+		async deleteTasks() {
+			if (this.selected.length < 1) return;
+
+			if (confirm("Êtes-vous sûr de vouloir supprimer ces tâches ?")) {
+				await fetch("api/todos.php", {
+					method: "DELETE",
+					body: JSON.stringify({ todos: this.selected }),
+				});
+
+				for (const [k, todo] of Object.entries(this.todos)) {
+					for (const _todo of this.selected) {
+						if (_todo.id == todo.id) {
+							this.todos.splice(k, 1);
+						}
+					}
+				}
+
+				this.$forceUpdate();
+			}
+		},
 		async postTodos() {
-			const selected = this.todos.filter(todo => todo.selected);
-			if (selected.length < 1) return;
+			if (this.selected.length < 1) return;
 
 			const res = await fetch("api/todos.php", {
 				method: "POST",
-				body: JSON.stringify({ todos: selected }),
+				body: JSON.stringify({ todos: this.selected }),
 			});
 
 			const data = await res.json();

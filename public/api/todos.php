@@ -15,38 +15,60 @@ function updateTodo(&$ToDo, &$todo) {
 	if ($todo["status"] == "COMPLETED" && $ToDo->getStatus() != $todo["status"])
 		$ToDo->setCompletedAt(new DateTime());
 	$ToDo->setDescription($todo["description"]);
-	$ToDo->setAssigned($todo["assigned"]["id"]);
+	if (isset($todo["assigned"]))
+		$ToDo->setAssigned($todo["assigned"]["id"]);
 	$ToDo->setStatus($todo["status"]);
 }
 
-if ($method == "GET") {
-	echo json_encode(ToDo::Find());
-} else {
-	$POST = null;
+function getJson() {
+	$data = null;
 	try {
-		$POST = json_decode(file_get_contents("php://input"), true);
-	} catch (Exception $e) {
-		var_dump($e);
+		$data = json_decode(file_get_contents("php://input"), true);
+	} catch (Exception $err) {
+		var_dump($err);
 	}
-	if (!isset($POST)) return;
-	if (isset($POST["todos"])) {
-		$result = [];
+	return $data;
+}
 
-		foreach ($POST["todos"] as $todo) {
+switch ($method) {
+	case "GET":
+		echo json_encode(ToDo::Find());
+		break;
+
+	case "DELETE":
+		$data = getJson();
+		if (!isset($data)) return;
+
+		foreach ($data["todos"] as $todo) {
 			if ($todo["id"] && $ToDo = ToDo::Get($todo["id"])) {
-				updateTodo($ToDo, $todo);
-				ToDo::Update($ToDo);
-				$result[] = $ToDo;
+				ToDo::Delete($ToDo);
 			}
 		}
 
-		echo json_encode($result);
-	} else if (isset($POST["todo"])) {
-		$todo = $POST["todo"];
-		$ToDo = new ToDo();
-		updateTodo($ToDo, $todo);
-		ToDo::Insert($ToDo);
-	}
+		break;
+
+	case "POST":
+		$data = getJson();
+		if (!isset($data)) return;
+		if (isset($data["todos"])) {
+			$result = [];
+
+			foreach ($data["todos"] as $todo) {
+				if ($todo["id"] && $ToDo = ToDo::Get($todo["id"])) {
+					updateTodo($ToDo, $todo);
+					ToDo::Update($ToDo);
+					$result[] = $ToDo;
+				}
+			}
+
+			echo json_encode($result);
+		} else if (isset($data["todo"])) {
+			$todo = $data["todo"];
+			$ToDo = new ToDo();
+			updateTodo($ToDo, $todo);
+			ToDo::Insert($ToDo);
+		}
+		break;
 }
 
 

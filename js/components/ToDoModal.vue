@@ -3,10 +3,18 @@
 		<div class="modal-background"></div>
 		<div class="modal-content">
 			<div class="box">
-				<div class="buttons is-right">
-					<button class="button is-success">Sauvegarder</button>
-					<button class="button">Annuler</button>
-				</div>
+				<form method="POST" @submit="$emit('submit')">
+					<div class="field">
+						<label class="label">Tâche</label>
+						<div class="control">
+							<textarea class="textarea" name="description"></textarea>
+						</div>
+					</div>
+					<div class="buttons is-right">
+						<button type="submit" class="button is-success">Sauvegarder</button>
+						<button class="button" @click="$emit('cancel')">Annuler</button>
+					</div>
+				</form>
 			</div>
 		</div>
 		<button class="modal-close is-large"></button>
@@ -14,14 +22,9 @@
 </template>
 
 <script>
-export default {
-	props: ["todo"],
-	watch: {
-		todo() {
-			console.log(this.todo);
-		},
-	},
-};
+	export default {
+		props: ["todo"],
+	};
 </script>
 
 <style></style>

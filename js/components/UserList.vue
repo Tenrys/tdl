@@ -9,9 +9,9 @@
 </template>
 
 <script>
-export default {
-	props: ["itemClass", "users"],
-};
+	export default {
+		props: ["itemClass", "users"],
+	};
 </script>
 
 <style></style>

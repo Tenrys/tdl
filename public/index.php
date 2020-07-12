@@ -25,11 +25,14 @@ require_once("includes/init.php");
 							<div class="dropdown" :class="{ 'is-active': dropdowns.assignTo.active }" @click="toggleDropdown('assignTo')">
 								<div class="dropdown-trigger">
 									<button class="button">
-										Assigner à...
+										<span>Assigner à...</span>
+										<span class="icon is-small">
+                                            <i class="fas fa-angle-down"></i>
+                                        </span>
 									</button>
 								</div>
 								<div class="dropdown-menu">
-									<div is="UserList" class="dropdown-content" item-class="dropdown-item" @picked="assignTo">
+									<div is="UserList" class="dropdown-content" item-class="dropdown-item" @picked="assignTo" :users="users">
 										<hr class="dropdown-divider">
 									</div>
 								</div>
@@ -37,7 +40,10 @@ require_once("includes/init.php");
 							<div class="dropdown" :class="{ 'is-active': dropdowns.changeStatus.active }" @click="toggleDropdown('changeStatus')">
 								<div class="dropdown-trigger">
 									<button class="button is-link">
-										Changer le statut...
+										<span>Changer le statut...</span>
+										<span class="icon is-small">
+                                            <i class="fas fa-angle-down"></i>
+                                        </span>
 									</button>
 								</div>
 								<div class="dropdown-menu">
@@ -46,25 +52,24 @@ require_once("includes/init.php");
 									</div>
 								</div>
 							</div>
-							<button class="button is-danger">Supprimer</button>
+							<button class="button is-danger" @click="deleteTasks()">Supprimer</button>
 						</div>
 						<div class="table-container">
 							<table class="table is-striped">
 								<thead>
-									<th><input type="checkbox" v-model="allSelected"></th>
-									<th>ID</th>
-									<th @click="sort('id')">Tâche</th>
-									<th @click="sort('assigned')">Assignée à</th>
-									<th @click="sort('status')">Statut</th>
-									<th @click="sort('createdAt')">Créée le</th>
-									<th @click="sort('startedAt')">Démarrée le</th>
-									<th @click="sort('completedAt')">Terminée le</th>
+									<th><input type="checkbox" v-model="all"></th>
+									<th v-for="row of rows" @click="sort(row.name)">
+										<span>{{ row.display }}</span>
+										<span class="icon is-small">
+                                            <i class="fas" v-if="sortMethod == row.name" :class="{ 'fa-angle-down':  sortReverse, 'fa-angle-up': !sortReverse }"></i>
+                                        </span>
+									</th>
 									<th v-if="isAdmin"></th>
 								</thead>
 								<tbody>
-									<tr is="ToDo" v-for="todo in todos" :key="todo.id" v-bind="todo" @edit="showModal(todo)">
+									<tr is="ToDo" v-for="todo in sortedTodos" :key="todo.id" v-bind="todo" @edit="showModal(todo)">
 										<td>
-											<input type="checkbox" :checked="todo.selected" @input="toggleTodo(todo)">
+											<input type="checkbox" :checked="todo.selected" @input="$set(todo, 'selected', !todo.selected)">
 										</td>
 									</tr>
 								</tbody>
@@ -72,7 +77,7 @@ require_once("includes/init.php");
 						</div>
 					</div>
 				</div>
-				<div is="ToDoModal" :todo="dirtyTodo" :class="{ 'is-active': dirtyTodo }"></div>
+				<div is="ToDoModal" :todo="dirtyTodo" :class="{ 'is-active': dirtyTodo }" @cancel="showModal(null)"></div>
 			</section>
 		</main>
 
