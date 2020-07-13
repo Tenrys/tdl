@@ -38,6 +38,9 @@ export default new Vue({
 		isAdmin() {
 			return this.user && this.user.rank == "ADMIN";
 		},
+		selected() {
+			return this.todos.filter(todo => todo.selected);
+		},
 	},
 	async mounted() {
 		this.todos = await (await fetch("api/todos.php")).json();
@@ -84,14 +87,16 @@ export default new Vue({
 					body: JSON.stringify({ todos: selected }),
 				});
 
+				let deleted = 0;
 				for (const [k, todo] of Object.entries(this.todos)) {
 					if (selected.find(_todo => todo.id == _todo.id)) {
-						this.todos.splice(k, 1);
+						this.todos.splice(k - deleted, 1);
+						deleted++;
 					}
 				}
-			}
 
-			this.dirtyTodo = null;
+				this.dirtyTodo = null;
+			}
 		},
 		async postTodos(selected) {
 			selected = selected || this.selected;
