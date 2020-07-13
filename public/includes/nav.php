@@ -9,6 +9,9 @@
 			<a class="navbar-item" href="index.php">
 				Accueil
 			</a>
+			<a class="navbar-item" href="users.php">
+				Utilisateurs
+			</a>
 			<?php if (isset($_SESSION["user"])) { ?>
 				<a class="navbar-item" href="profile.php">
 					<?= $_SESSION["user"]->getUsername(); ?>

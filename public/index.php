@@ -17,7 +17,7 @@ require_once("includes/init.php");
 		<?php require("includes/header.php") ?>
 
 		<main>
-			<section class="section" id="app">
+			<section class="section" id="index">
 				<div class="columns is-centered">
 					<div class="column is-narrow-desktop">
 						<div v-if="isAdmin" class="buttons">
@@ -54,27 +54,7 @@ require_once("includes/init.php");
 							</div>
 							<button class="button is-danger" @click="deleteTasks()">Supprimer</button>
 						</div>
-						<div class="table-container">
-							<table class="table is-striped">
-								<thead>
-									<th><input type="checkbox" v-model="all"></th>
-									<th v-for="row of rows" :key="row.name" @click="sort(row.name)">
-										<span>{{ row.display }}</span>
-										<span class="icon is-small">
-                                            <i class="fas" v-if="sortMethod == row.name" :class="{ 'fa-angle-down':  sortReverse, 'fa-angle-up': !sortReverse }"></i>
-                                        </span>
-									</th>
-									<th v-if="isAdmin"></th>
-								</thead>
-								<tbody>
-									<tr is="ToDo" v-for="todo in sortedTodos" :key="todo.id" v-bind="todo" @edit="showModal">
-										<td>
-											<input type="checkbox" :checked="todo.selected" @input="$set(todo, 'selected', !todo.selected)">
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
+						<div is="Table" :rows="rows" :row-type="ToDoRow" :data="todos" @edit="showModal" :is-admin="isAdmin"></div>
 					</div>
 				</div>
 				<div is="ToDoModal" v-if="dirtyTodo" :todo="dirtyTodo" :users="users" @cancel="showModal(null)" @submit="postTodos([dirtyTodo])" @delete="deleteTasks([dirtyTodo])"></div>

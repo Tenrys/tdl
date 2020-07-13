@@ -1,6 +1,8 @@
 <template>
 	<tr class="todo has-aligned-rows" :class="{ 'is-completed': completed }">
-		<slot></slot>
+		<td v-if="isAdmin">
+			<input type="checkbox" :checked="selected" @input="$emit('select')" />
+		</td>
 		<th>{{ id }}</th>
 		<td class="description">{{ description.replace(/(.{32})..+/, "$1…") }}</td>
 		<td>
@@ -12,7 +14,7 @@
 		<td>{{ formatDate(createdAt) }}</td>
 		<td>{{ formatDate(startedAt) }}</td>
 		<td>{{ formatDate(completedAt) }}</td>
-		<td v-if="$root.isAdmin">
+		<td v-if="isAdmin">
 			<a @click="edit">Gérer...</a>
 		</td>
 	</tr>
@@ -29,7 +31,17 @@
 	};
 
 	export default {
-		props: ["id", "description", "status", "assigned", "createdAt", "startedAt", "completedAt"],
+		props: [
+			"id",
+			"description",
+			"status",
+			"assigned",
+			"createdAt",
+			"startedAt",
+			"completedAt",
+			"selected",
+			"isAdmin",
+		],
 		computed: {
 			completed() {
 				return this.status == "COMPLETED" || this.status == "CANCELED";
