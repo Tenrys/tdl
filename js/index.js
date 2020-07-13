@@ -1,7 +1,7 @@
 import ToDo from "./components/ToDo.vue";
 import ToDoModal from "./components/ToDoModal.vue";
 import UserList from "./components/UserList.vue";
-import { get, sortBy, find } from "lodash";
+import { sortBy } from "lodash";
 
 new Vue({
 	components: { ToDo, ToDoModal, UserList },
@@ -22,7 +22,7 @@ new Vue({
 				{ id: "WAITING", class: "", display: "En attente" },
 				{ id: "IN_PROGRESS", class: "has-text-info-dark", display: "En cours" },
 				{ id: "COMPLETED", class: "has-text-success-dark", display: "Terminée" },
-				{ id: "WAITING", class: "has-text-warning-dark", display: "Annulée" },
+				{ id: "CANCELED", class: "has-text-warning-dark", display: "Annulée" },
 			],
 			rows: [
 				{ name: "id", display: "ID" },
@@ -71,6 +71,12 @@ new Vue({
 	},
 	methods: {
 		showModal(todo) {
+			if (todo === undefined) {
+				// Default value
+				todo = {
+					status: "WAITING",
+				};
+			}
 			this.dirtyTodo = todo;
 		},
 		toggleDropdown(name) {
@@ -99,46 +105,61 @@ new Vue({
 			}
 			this.postTodos();
 		},
-		async deleteTasks() {
-			if (this.selected.length < 1) return;
+		async deleteTasks(selected) {
+			selected = selected || this.selected;
+			if (selected.length < 1) return;
+			let plural = "ces tâches";
+			if (selected.length < 2) plural = "cette tâche";
 
-			if (confirm("Êtes-vous sûr de vouloir supprimer ces tâches ?")) {
+			if (confirm(`Êtes-vous sûr de vouloir supprimer ${plural} ?`)) {
 				await fetch("api/todos.php", {
 					method: "DELETE",
-					body: JSON.stringify({ todos: this.selected }),
+					body: JSON.stringify({ todos: selected }),
 				});
 
 				for (const [k, todo] of Object.entries(this.todos)) {
-					for (const _todo of this.selected) {
-						if (_todo.id == todo.id) {
-							this.todos.splice(k, 1);
-						}
+					if (selected.find(_todo => todo.id == _todo.id)) {
+						this.todos.splice(k, 1);
 					}
 				}
-
-				this.$forceUpdate();
 			}
+
+			this.dirtyTodo = null;
 		},
-		async postTodos() {
-			if (this.selected.length < 1) return;
+		async postTodos(selected) {
+			selected = selected || this.selected;
+			if (selected.length < 1) return;
 
 			const res = await fetch("api/todos.php", {
 				method: "POST",
-				body: JSON.stringify({ todos: this.selected }),
+				body: JSON.stringify({ todos: selected }),
 			});
 
-			const data = await res.json();
-			for (const [k, todo] of Object.entries(this.todos)) {
-				for (const _todo of data) {
-					if (_todo.id == todo.id) {
+			const data = await res.json().catch(console.error);
+			if (Array.isArray(data)) {
+				// Add new todos
+				this.todos.push(
+					...data.filter(todo => {
+						for (const _todo of this.todos) {
+							if (todo.id == _todo.id) return false;
+						}
+						return true;
+					})
+				);
+
+				// Update existing todos
+				for (const [k, todo] of Object.entries(this.todos)) {
+					const _todo = data.find(_todo => _todo.id == todo.id);
+					if (_todo) {
 						this.$set(this.todos, k, {
 							...this.todos[k],
 							..._todo,
 						});
-						break;
 					}
 				}
 			}
+
+			this.dirtyTodo = null;
 		},
 	},
 });

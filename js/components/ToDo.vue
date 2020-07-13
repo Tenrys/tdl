@@ -13,12 +13,14 @@
 		<td>{{ formatDate(startedAt) }}</td>
 		<td>{{ formatDate(completedAt) }}</td>
 		<td v-if="$root.isAdmin">
-			<a @click="$emit('edit')">Gérer...</a>
+			<a @click="edit">Gérer...</a>
 		</td>
 	</tr>
 </template>
 
 <script>
+	import { cloneDeep } from "lodash";
+
 	const statusDisplayMap = {
 		WAITING: "En attente",
 		IN_PROGRESS: "En cours",
@@ -64,6 +66,9 @@
 				} else {
 					return "";
 				}
+			},
+			edit() {
+				this.$emit("edit", cloneDeep(this.$props));
 			},
 		},
 	};

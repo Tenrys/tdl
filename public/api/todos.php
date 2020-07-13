@@ -5,7 +5,8 @@ require_once("../includes/init.php");
 $method = $_SERVER["REQUEST_METHOD"];
 
 function updateTodo(&$ToDo, &$todo) {
-	$ToDo->setCreatedAt(new DateTime($todo["createdAt"]["date"]));
+	if (!isset($todo["createdAt"]))
+		$ToDo->setCreatedAt(new DateTime());
 	if (isset($todo["startedAt"]))
 		$ToDo->setStartedAt(new DateTime($todo["startedAt"]["date"]));
 	if (isset($todo["completedAt"]))
@@ -15,8 +16,11 @@ function updateTodo(&$ToDo, &$todo) {
 	if ($todo["status"] == "COMPLETED" && $ToDo->getStatus() != $todo["status"])
 		$ToDo->setCompletedAt(new DateTime());
 	$ToDo->setDescription($todo["description"]);
-	if (isset($todo["assigned"]))
+	if (isset($todo["assigned"])) {
 		$ToDo->setAssigned($todo["assigned"]["id"]);
+	} else {
+		$ToDo->setAssigned(null);
+	}
 	$ToDo->setStatus($todo["status"]);
 }
 
@@ -40,7 +44,7 @@ switch ($method) {
 		if (!isset($data)) return;
 
 		foreach ($data["todos"] as $todo) {
-			if ($todo["id"] && $ToDo = ToDo::Get($todo["id"])) {
+			if (isset($todo["id"]) && $ToDo = ToDo::Get($todo["id"])) {
 				ToDo::Delete($ToDo);
 			}
 		}
@@ -54,19 +58,19 @@ switch ($method) {
 			$result = [];
 
 			foreach ($data["todos"] as $todo) {
-				if ($todo["id"] && $ToDo = ToDo::Get($todo["id"])) {
+				if (isset($todo["id"]) && $ToDo = ToDo::Get($todo["id"])) {
 					updateTodo($ToDo, $todo);
 					ToDo::Update($ToDo);
+					$result[] = $ToDo;
+				} else {
+					$ToDo = new ToDo();
+					updateTodo($ToDo, $todo);
+					ToDo::Insert($ToDo);
 					$result[] = $ToDo;
 				}
 			}
 
 			echo json_encode($result);
-		} else if (isset($data["todo"])) {
-			$todo = $data["todo"];
-			$ToDo = new ToDo();
-			updateTodo($ToDo, $todo);
-			ToDo::Insert($ToDo);
 		}
 		break;
 }

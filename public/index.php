@@ -21,7 +21,7 @@ require_once("includes/init.php");
 				<div class="columns is-centered">
 					<div class="column is-narrow-desktop">
 						<div v-if="isAdmin" class="buttons">
-							<button class="button is-success" @click="showModal({})">Nouveau</button>
+							<button class="button is-success" @click="showModal()">Nouveau</button>
 							<div class="dropdown" :class="{ 'is-active': dropdowns.assignTo.active }" @click="toggleDropdown('assignTo')">
 								<div class="dropdown-trigger">
 									<button class="button">
@@ -48,7 +48,7 @@ require_once("includes/init.php");
 								</div>
 								<div class="dropdown-menu">
 									<div class="dropdown-content">
-										<a class="dropdown-item" v-for="status in statuses" :class="status.class" @click="changeStatus(status.id)">{{ status.display }}</a>
+										<a class="dropdown-item" v-for="status in statuses" :key="status.id" :class="status.class" @click="changeStatus(status.id)">{{ status.display }}</a>
 									</div>
 								</div>
 							</div>
@@ -58,7 +58,7 @@ require_once("includes/init.php");
 							<table class="table is-striped">
 								<thead>
 									<th><input type="checkbox" v-model="all"></th>
-									<th v-for="row of rows" @click="sort(row.name)">
+									<th v-for="row of rows" :key="row.name" @click="sort(row.name)">
 										<span>{{ row.display }}</span>
 										<span class="icon is-small">
                                             <i class="fas" v-if="sortMethod == row.name" :class="{ 'fa-angle-down':  sortReverse, 'fa-angle-up': !sortReverse }"></i>
@@ -67,7 +67,7 @@ require_once("includes/init.php");
 									<th v-if="isAdmin"></th>
 								</thead>
 								<tbody>
-									<tr is="ToDo" v-for="todo in sortedTodos" :key="todo.id" v-bind="todo" @edit="showModal(todo)">
+									<tr is="ToDo" v-for="todo in sortedTodos" :key="todo.id" v-bind="todo" @edit="showModal">
 										<td>
 											<input type="checkbox" :checked="todo.selected" @input="$set(todo, 'selected', !todo.selected)">
 										</td>
@@ -77,7 +77,7 @@ require_once("includes/init.php");
 						</div>
 					</div>
 				</div>
-				<div is="ToDoModal" :todo="dirtyTodo" :class="{ 'is-active': dirtyTodo }" @cancel="showModal(null)"></div>
+				<div is="ToDoModal" v-if="dirtyTodo" :todo="dirtyTodo" :users="users" @cancel="showModal(null)" @submit="postTodos([dirtyTodo])" @delete="deleteTasks([dirtyTodo])"></div>
 			</section>
 		</main>
 

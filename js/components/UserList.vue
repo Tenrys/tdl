@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="userlist">
 		<a class="has-text-danger" :class="itemClass" @click="$emit('picked', null)">Désassigner</a>
 		<slot></slot>
 		<a :class="itemClass" v-for="user in users" :key="user.id" @click="$emit('picked', user)">{{
@@ -14,4 +14,9 @@
 	};
 </script>
 
-<style></style>
+<style>
+	.userlist {
+		max-height: 512px;
+		overflow: auto;
+	}
+</style>
