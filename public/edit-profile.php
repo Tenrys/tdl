@@ -33,7 +33,7 @@ if (isset($_POST["update"])) {
 						<h1 class="title">Modifier mon profil</h1>
 
 						<?php if (isset($success) && !$success) { ?>
-							<article class="message">
+							<article class="message is-danger">
 								<div class="message-body">
 									<?= $message ?>
 								</div>

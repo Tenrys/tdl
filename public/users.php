@@ -38,7 +38,7 @@ require_once("includes/init.php");
 							</div>
 							<button class="button is-danger" @click="deleteUsers()">Supprimer</button>
 						</div>
-						<div is="Table" :rows="rows" :row-type="UserRow" :data="users" :is-admin="isAdmin"></div>
+						<div is="Table" :rows="rows" :row-type="UserRow" :data="users" :is-admin="isAdmin" @change-rank="changeRank" @delete="deleteUsers"></div>
 					</div>
 				</div>
 			</section>

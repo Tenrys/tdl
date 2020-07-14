@@ -34,7 +34,7 @@ if (isset($_POST["login"])) {
 						<h1 class="title">Connexion</h1>
 
 						<?php if (isset($message)) { ?>
-							<article class="message">
+							<article class="message is-danger">
 								<div class="message-body">
 									<?= $message ?>
 								</div>

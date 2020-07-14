@@ -35,7 +35,7 @@ if (isset($_POST["register"])) {
 							<p>Vous allez être redirigé vers la page de connexion...</p>
 						<?php } else {
 							if (isset($message)) { ?>
-								<article class="message">
+								<article class="message is-danger">
 									<div class="message-body">
 										<?= $message ?>
 									</div>

@@ -40,6 +40,7 @@ switch ($method) {
 		break;
 
 	case "DELETE":
+		if (!isset($_SESSION["user"]) || $_SESSION["user"]->getRank() != "ADMIN") break;
 		$data = getJson();
 		if (!isset($data)) return;
 
@@ -52,6 +53,7 @@ switch ($method) {
 		break;
 
 	case "POST":
+		if (!isset($_SESSION["user"]) || $_SESSION["user"]->getRank() != "ADMIN") break;
 		$data = getJson();
 		if (!isset($data)) return;
 		if (isset($data["todos"])) {
@@ -74,6 +76,5 @@ switch ($method) {
 		}
 		break;
 }
-
 
 ?>
