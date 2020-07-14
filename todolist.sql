@@ -45,7 +45,10 @@ CREATE TABLE `todo` (
 --
 
 INSERT INTO `todo` (`id`, `description`, `status`, `id_assigned`, `started_at`, `created_at`, `completed_at`) VALUES
-(2, 'Test 2', 'COMPLETED', 1, '2020-07-09 18:04:39', '2020-07-06 13:27:05', '2020-07-09 18:05:22');
+(6, 'In Progress', 'IN_PROGRESS', NULL, '2020-07-10 09:24:50', '2020-07-10 11:21:20', NULL),
+(7, 'Completed', 'COMPLETED', NULL, '2020-07-10 09:27:58', '2020-07-10 11:21:22', '2020-07-10 09:28:11'),
+(8, 'Waiting', 'WAITING', NULL, '2020-07-10 09:20:21', '2020-07-10 11:21:24', NULL),
+(9, 'Canceled', 'CANCELED', NULL, NULL, '2020-07-10 11:26:46', NULL);
 
 -- --------------------------------------------------------
 
